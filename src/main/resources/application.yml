@@ -8,3 +8,6 @@ evolution:
   api:
     url: ${EVOLUTION_API_URL:http://localhost:8080}
     api-key: ${EVOLUTION_API_KEY:your-api-key-here}
+
+allowed:
+  test-numbers: ${ALLOWED_TEST_NUMBERS}
