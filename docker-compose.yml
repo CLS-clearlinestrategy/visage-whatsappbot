@@ -12,28 +12,26 @@ services:
       - AUTHENTICATION_API_KEY=${AUTHENTICATION_API_KEY}
       - DATABASE_PROVIDER=postgresql
       - DATABASE_CONNECTION_URI=${DATABASE_CONNECTION_URI}
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_ENABLED=true
     depends_on:
-      - postgres
+      - redis
     networks:
       - evolution-network
 
-  postgres:
-    image: postgres:15-alpine
-    container_name: evolution-postgres
+  redis:
+    image: redis:7-alpine
+    container_name: evolution-redis
     restart: always
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${REDIS_PORT}:6379"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - redis_data:/data
     networks:
       - evolution-network
 
 volumes:
-  postgres_data:
+  redis_data:
 
 networks:
   evolution-network:
