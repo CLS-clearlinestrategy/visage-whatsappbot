@@ -10,6 +10,13 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+  data:
+    redis:
+      host: evolution-redis
+      port: 6379
+      password: "!Yuji40028922!"
+      timeout: 60000
+      database: 1
 
 
 kind: Application
