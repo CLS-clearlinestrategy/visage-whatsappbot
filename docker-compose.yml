@@ -1,38 +1,38 @@
 version: '3.8'
 
 services:
-  evolution-api:
-    image: atendai/evolution-api:latest
-    container_name: evolution-api
-    restart: always
-    ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
-    environment:
-      - SERVER_PORT=${SERVER_PORT}
-      - AUTHENTICATION_API_KEY=${AUTHENTICATION_API_KEY}
-      - DATABASE_PROVIDER=postgresql
-      - DATABASE_CONNECTION_URI=${DATABASE_CONNECTION_URI}
-      - REDIS_URI=${REDIS_URI}
-      - REDIS_ENABLED=true
-    depends_on:
-      - redis
-    networks:
-      - evolution-network
-
-  redis:
+  evolution-redis:
+    container_name: evolution_redis
     image: redis:7-alpine
-    container_name: evolution-redis
-    restart: always
-    ports:
-      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
+    env_file:
+      - .env.evolution
+    command: /bin/sh -c 'redis-server --requirepass "$$EVOLUTION_REDIS_PASSWORD"'
     volumes:
-      - redis_data:/data
-    networks:
-      - evolution-network
+      - evolution_redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", 'redis-cli -a "$$EVOLUTION_REDIS_PASSWORD" ping | grep PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  evolution-api:
+    container_name: evolution_api
+    image: evoapicloud/evolution-api:v2.3.7
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.evolution
+    entrypoint: ["/bin/sh", "-lc"]
+    command:
+      - "apk add --no-cache ca-certificates && update-ca-certificates && . ./Docker/scripts/deploy_database.sh && npm run start:prod"
+    volumes:
+      - evolution_instances:/evolution/instances
+    depends_on:
+      evolution-redis:
+        condition: service_healthy
 
 volumes:
-  redis_data:
-
-networks:
-  evolution-network:
-    driver: bridge
+  evolution_redis_data:
+  evolution_instances:
