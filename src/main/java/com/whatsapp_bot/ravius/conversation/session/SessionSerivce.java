@@ -11,4 +11,16 @@ public class SessionSerivce {
         this.repository = repository;
     }
 
+    public ConversationSession getOrCreate(String phone){
+        return (repository.findById(phone).orElse(save(phone)));
+    }
+
+    public ConversationSession save(String phone){
+        return repository.save(new ConversationSession(phone));
+    }
+
+    public void cleanSessionCache(String phone){
+        repository.deleteById(phone);
+    }
+
 }
