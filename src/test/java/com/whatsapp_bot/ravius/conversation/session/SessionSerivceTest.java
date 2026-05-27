@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SessionSerivceTest {
 
     @Autowired
-    private SessionSerivce sessionSerivce;
+    private SessionService sessionSerivce;
 
     @Autowired
     private ConversationSessionRepository repository;
