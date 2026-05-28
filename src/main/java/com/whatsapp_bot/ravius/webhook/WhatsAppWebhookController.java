@@ -18,8 +18,11 @@ public class WhatsAppWebhookController {
 
     @PostMapping
     public void handleWebhook(@RequestBody EvolutionWebhookPayload payload) {
-        var session = service.getOrCreate(utils.getPhoneNumber(payload));
-
-        System.out.println(session.toString());
+        if (utils.isARecivenMessageFromMe(payload)) {
+            var session = service.getOrCreate(utils.getPhoneNumber(payload));
+            System.out.println("Estado da sessão \n"+session.getCurrentState()+"\n Numero:\n" + session.getPhone());
+        }else {
+            System.out.println("not a message ==================================== fim");
+        }
     }
 }
